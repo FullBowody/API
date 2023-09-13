@@ -1,0 +1,50 @@
+version: '3.1'
+
+services:
+  # MariaDB setup
+  db:
+    container_name: fullbowody-db
+    image: mariadb
+    restart: always
+    command: [
+      '--lower-case-table-names=1'
+    ]
+    ports:
+      - "3306:3306"
+    networks:
+      - fullbowody_network
+    volumes:
+      - ./db/data:/var/lib/mysql
+    environment:
+      MARIADB_DATABASE: fullbowody
+      MARIADB_ROOT_PASSWORD: <change_password>
+
+  # Node api setup
+  node:
+    container_name: fullbowody-api
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - fullbowody_network
+    environment:
+      PORT: 8080
+      APP_KEY: <insert_furwaz_key>
+      DATABASE_URL: "mysql://root:<change_password>@db:3306/fullbowody"
+      SECRET_KEY: <change_secret>
+
+  # Added adminer (light phpmyadmin), to be able to view the database
+  adminer:
+    container_name: fullbowody-adminer
+    image: adminer
+    restart: always
+    ports:
+      - "8008:8080"
+    networks:
+      - fullbowody_network
+
+# Common network for all services
+networks:
+  fullbowody_network:
+    driver: bridge

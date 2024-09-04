@@ -53,8 +53,9 @@ export async function retreiveUser (req: express.Request, res: express.Response)
         return;
     }
 
-    const userData = json?.data?.user;
+    const userData = json?.data;
     if (userData === undefined || userData === null) {
+        console.error('User not retreived : json = ', json);
         new ErrLog(res.locals.lang.error.generic.internalError, ErrLog.CODE.INTERNAL_SERVER_ERROR).sendTo(res);
         return;
     }
